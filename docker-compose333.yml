@@ -1,0 +1,37 @@
+version: '3.8'
+services:
+  db:
+    image: postgres:17
+    container_name: qr_code_postgresql
+    restart: always
+    environment:
+      POSTGRES_DB: qr_code_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: shMM1514
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+
+  web:
+    build: .
+    container_name: qr_code_container
+    command: >
+      sh -c "python manage.py migrate &&
+             python manage.py runserver 0.0.0.0:8005"
+    volumes:
+      - .:/app
+    ports:
+      - "8005:8005"
+    depends_on:
+      - db
+    env_file:
+      - .env  # ✅ `.env` faylini yuklash
+
+volumes:
+  pgdata:
+
+
+networks:
+  my_network:
+    external: true

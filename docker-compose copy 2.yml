@@ -1,0 +1,40 @@
+version: '3.8'
+services:
+  db:
+    image: postgres:17
+    container_name: qr_code_postgresql
+    restart: always
+    environment:
+      POSTGRES_DB: qr_code
+      POSTGRES_USER: admin_bnpz  # ✅ Django sozlamalariga moslashtirildi
+      POSTGRES_PASSWORD: shMM151416  # ✅ Django sozlamalariga moslashtirildi
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+    networks:
+      - my_network  # ✅ Docker tarmog‘iga qo‘shildi
+
+  web:
+    build: .
+    container_name: qr_code_container
+    command: >
+      sh -c "python manage.py migrate &&
+             python manage.py runserver 0.0.0.0:8005"
+    volumes:
+      - .:/app
+    ports:
+      - "8005:8005"
+    depends_on:
+      - db
+    env_file:
+      - .env  # ✅ `.env` faylini yuklash
+    networks:
+      - my_network  # ✅ Docker tarmog‘iga qo‘shildi
+
+volumes:
+  pgdata:
+
+networks:
+  my_network:
+    external: true

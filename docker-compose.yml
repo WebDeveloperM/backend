@@ -1,0 +1,20 @@
+version: '3.8'
+services:
+  web:
+    build: .
+    container_name: qr_code_container
+    command: >
+      sh -c "python manage.py migrate &&
+             python manage.py runserver 0.0.0.0:8005"
+    volumes:
+      - .:/app
+    ports:
+      - "8005:8005"
+    env_file:
+      - .env  # ✅ `.env` faylini yuklash
+    networks:
+      - my_network  # ✅ Docker tarmog‘iga qo‘shildi
+
+networks:
+  my_network:
+    driver: bridge
